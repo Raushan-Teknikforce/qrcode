@@ -1,0 +1,24 @@
+{
+  "name": "qr-code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "nodemon": "nodemon --exec electron . ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "raushan-ranjan",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^29.1.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "nodemon": "^3.1.0",
+    "qr-image": "^3.2.0",
+    "qrcode": "^1.5.3"
+  }
+}
+
+
