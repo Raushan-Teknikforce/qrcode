@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.electronAPI.generatedImage((event, imgData) => {
     // Convert Uint8Array to Blob
-    console.log(imgData);
+   // console.log(imgData);
     // const blob = new Blob([imgData], { type: 'image/png' });
     //  const url = URL.createObjectURL(blob);
     // Create an image element and set its source to the data URL
@@ -18,4 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Append the image element to the document body or any other container
     document.body.appendChild(img);
   });
+
+window.electronAPI.DataRequest();
+window.electronAPI.fetchData((event, data)=>{
+  console.log("fetched data",data);
+})
 });

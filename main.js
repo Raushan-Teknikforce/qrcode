@@ -3,6 +3,19 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const qr = require("qrcode");
 const fs = require("fs");
 const path = require("path");
+const Sequelize = require("sequelize");
+
+const sequelize = new Sequelize({
+  dialect: "sqlite",
+  storage: path.join("database.sqlite"),
+});
+
+const QrCodeImage = sequelize.define("QrCodeImage", {
+  data: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+});
 
 let mainWindow;
 function createWindow() {
@@ -15,18 +28,31 @@ function createWindow() {
     },
   });
   mainWindow.loadFile("index.html");
-  mainWindow.webContents.openDevTools();
+ // mainWindow.webContents.openDevTools();
 }
 
-app.on("ready", createWindow);
+app.on("ready", async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+    await sequelize.sync(); // Create the table if it doesn't exist
+    createWindow();
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+});
 
 ipcMain.on("QrImgRequest", async (event, arg) => {
   try {
     console.log(arg);
     const ImgData = await qr.toDataURL(arg, { type: "png" });
-    //console.log(ImgData);
+    // Save the image data to the database
+    const savedQrCodeImage = await QrCodeImage.create({ data: ImgData });
+    console.log("QR code image saved to database:", savedQrCodeImage.toJSON());
+
     mainWindow.webContents.send("generatedImg", ImgData);
-    // You can also save the image to a file if needed
+
+    // Save the image to a file if needed
     fs.writeFile(
       "qr.png",
       ImgData.replace(/^data:image\/png;base64,/, ""),
@@ -40,3 +66,10 @@ ipcMain.on("QrImgRequest", async (event, arg) => {
     console.error(error);
   }
 });
+
+
+ipcMain.on("DataRequest", async (event, arg) => {
+    const data =  await QrCodeImage.findAll();
+    mainWindow.webContents.send("fetchedData", data);
+})
+

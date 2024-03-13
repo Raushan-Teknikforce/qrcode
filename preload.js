@@ -7,4 +7,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   generatedImage: (callback) => {
     ipcRenderer.on("generatedImg", callback);
   },
+  DataRequest: () => {
+    ipcRenderer.send("DataRequest");
+  },
+  fetchData:(callback)=>{
+    ipcRenderer.on("fetchedData", callback);
+  }
 });
+
